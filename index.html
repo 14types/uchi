@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="/jquery-3.1.1.min.js"></script>
+        <style>
+        #input_a,#input_b {
+            position:absolute;
+            width:26px;
+            display:none;
+            text-align:center;
+        }
+        #uravnenie {
+            margin:20px 0 60px 0;
+            line-height:1;
+        }
+        #ab {
+            text-align:center;
+            width:12vw;
+            border: 1px solid #fff;
+        }
+        body {
+            text-align:center;
+            margin:auto;
+            font-size:8vw;
+        }
+        #a,#b,#ab {
+            display:inline-block;
+        }
+        </style>
+    </head>
+<body>
+    <div id='uravnenie'>
+        <div id='a'></div>
+        +
+        <div id='b'></div>
+        =
+        <div id='ab'>?</div>
+    </div>
+    <div style="position:relative;display:inline-block;">
+        <input type="tel" id="input_a">
+        <input type="tel" id="input_b">
+        <canvas id='line'></canvas>
+    </div>
+    <script>
+        function drawarc(x1,x2,inp){
+            start = 36+x1*step;
+            dlina = x2*step+start;
+            r = x2*step/Math.sqrt(3);
+            ctx.beginPath();
+            ctx.arc(start/2+dlina/2, zer+r/2, r, (7/6)*Math.PI,(11/6)*Math.PI, false);
+            ctx.lineTo(dlina+3, zer-6);
+            ctx.moveTo(dlina, zer);
+            ctx.lineTo(dlina-9, zer-3);
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            $('#input_'+inp).css("left",(start+x2*step/2-10)+"px");
+            $('#input_'+inp).css("top",(zer-r/2-30)+"px");
+            $('#input_'+inp).css("display","block");  
+        };
+        a = Math.floor(Math.random()*4)+6;
+        b = Math.floor(Math.random()*4)+11-a;
+        var arr = {
+        a: a,
+        b: b,
+        };
+        document.getElementById("a").innerHTML = a;
+        document.getElementById("b").innerHTML = b;
+        var canvas = document.getElementById("line");
+        canvas.width = 875;
+        canvas.height = 200;
+        var ctx = canvas.getContext("2d");
+        pic = new Image();
+        pic.src = 'sprite.png';
+        pic.onload = function() {
+            ctx.drawImage(pic, 0, 100);
+            step = 39;
+            ctx.strokeStyle = "#d57da9";
+            zer = 118;
+            drawarc(0,a,'a');
+        }
+        $('#input_a,#input_b').on('input', function(){
+            val = this.id.split('_')[1];
+            if ($('#'+this.id).val()!=arr[val]) {
+                $('#'+this.id).css("color","red");
+                $('#'+val).css("background-color","#faa749");
+            } else {
+                $('#'+this.id).css("color","black");
+                $('#'+val).css("background-color","#fff");
+                var div = $('<div style="font-style:bold;font-size:16px;position:absolute;left:'+(start+arr[val]*step/2-6)+'px;top:'+(zer-r/2-26)+'px;">'+arr[val]+'</div>');
+                $(this).replaceWith(div);
+                if (val=='a') drawarc(a,b,'b');
+                if (val=='b') {
+                    document.getElementById('ab').contentEditable='true';
+                    $("#ab").css("border","1px solid #000");
+                    $("#ab").text('');
+                }
+            }
+        });
+        $('#ab').on('input', function(){
+            ab = $('#'+this.id).text();
+            if (ab==a+b) {
+                document.getElementById('ab').contentEditable='false';
+                $("#ab").css("border","1px solid #fff");
+                $("#ab").css("color","black");
+                $(this).blur();
+            } else {
+                $("#ab").css("color","red");
+            }
+        });
+    </script>
+</body>
+</html>
